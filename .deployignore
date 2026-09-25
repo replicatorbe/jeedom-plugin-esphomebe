@@ -1,0 +1,12 @@
+# Exclusions propres au plugin esphomebe, ajoutées à celles de deploy-plugin.sh.
+# Un motif rsync par ligne.
+
+# Le venv Python est créé par Jeedom dans le dossier installé, lors de
+# l'installation des dépendances. Il n'existe pas dans le dépôt : sans cette
+# ligne, le --delete du déploiement l'effacerait à chaque fois et le démon ne
+# démarrerait plus.
+resources/python_venv/
+__pycache__/
+
+# Contrôles de développement.
+tests/

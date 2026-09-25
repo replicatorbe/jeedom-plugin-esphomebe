@@ -1,0 +1,32 @@
+{
+    "id": "esphomebe",
+    "name": "ESPHome",
+    "pluginVersion": "0.1",
+    "description": {
+        "fr_FR": "Connexion directe aux modules ESPHome par leur API native chiffrée, sans Home Assistant ni MQTT. Le plugin découvre tout seul les entités déclarées dans le YAML du module (capteurs, contacts, lumières, volets, thermostats, serrures…), crée les commandes info et action correspondantes et reçoit chaque nouvelle valeur en temps réel.",
+        "en_US": "Direct connection to ESPHome devices through their encrypted native API, with no Home Assistant or MQTT in between. The plugin discovers the entities declared in the device YAML (sensors, contacts, lights, covers, thermostats, locks…), creates the matching info and action commands and receives every new value in real time."
+    },
+    "licence": "AGPL",
+    "author": "sMug (Jérôme Fafchamps)",
+    "require": "4.4",
+    "requireOsVersion": "11",
+    "category": "devicecommunication",
+    "index": "esphomebe",
+    "hasDependency": 1,
+    "hasOwnDeamon": 1,
+    "maxDependancyInstallTime": 15,
+    "eventjs": 0,
+    "issue": "https://github.com/replicatorbe/jeedom-plugin-esphomebe/issues",
+    "documentation": "https://github.com/replicatorbe/jeedom-plugin-esphomebe/blob/master/docs/#language#/index.md",
+    "changelog": "https://github.com/replicatorbe/jeedom-plugin-esphomebe/blob/master/docs/#language#/changelog.md",
+    "language": [
+        "fr_FR",
+        "en_US"
+    ],
+    "compatibility": [
+        "smart",
+        "rpi",
+        "docker",
+        "diy"
+    ]
+}
