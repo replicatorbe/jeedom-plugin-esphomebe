@@ -47,9 +47,7 @@ Les valeurs sont **poussées par le module** dès qu'elles changent : il n'y a
 aucune interrogation périodique à régler.
 
 Les entités de diagnostic (signal Wi-Fi, durée de fonctionnement…) et celles
-que le YAML désactive par défaut sont créées masquées. Les autres types
-(lumières, volets, climatisation…) sont listés sur la page de l'équipement
-sous « Non pris en charge ».
+que le YAML désactive par défaut sont créées masquées.
 
 Le plugin crée aussi deux commandes propres : **Connecté** (1 tant que la
 connexion au module est établie) et **Reconnecter**.
