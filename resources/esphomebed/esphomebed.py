@@ -67,7 +67,13 @@ MAX_REJECTIONS = 3
 
 # Codes HTTP d'un Apache en redémarrage ou en maintenance : Jeedom n'a pas
 # refusé le lot, il n'a pas pu le lire. On garde et on réessaie.
-TRANSIENT_HTTP = (502, 503, 504)
+# 403 en fait partie : jeeEsphome.php répond 401 pour une mauvaise clé, un 403
+# ne peut donc venir que d'Apache (31 lots perdus ainsi le 08/10).
+TRANSIENT_HTTP = (403, 502, 503, 504)
+
+# Attente entre deux essais d'envoi : doublée à chaque échec, plafonnée.
+RETRY_DELAY = 10
+RETRY_DELAY_MAX = 60
 
 
 class Link:
@@ -124,6 +130,7 @@ class Link:
         pendant l'envoi s'accumule derrière, et un échec le remet devant.
         """
         rejections = 0
+        delay = RETRY_DELAY
         while True:
             await self.wakeup.wait()
             await asyncio.sleep(FLUSH_DELAY)
@@ -136,6 +143,7 @@ class Link:
                 if answer != 'OK':
                     raise ValueError('réponse de Jeedom : ' + answer[:200])
                 rejections = 0
+                delay = RETRY_DELAY
                 continue
             except urllib.error.HTTPError as err:
                 refused = err.code not in TRANSIENT_HTTP
@@ -155,10 +163,11 @@ class Link:
                     rejections = 0
                     self.wakeup.set()
                     continue
-            LOG.error('Envoi à Jeedom impossible (%s), nouvel essai dans 10s', reason)
+            LOG.error('Envoi à Jeedom impossible (%s), nouvel essai dans %ss', reason, delay)
             self.queue = batch + self.queue
             self._trim()
-            await asyncio.sleep(10)
+            await asyncio.sleep(delay)
+            delay = min(delay * 2, RETRY_DELAY_MAX)
             self.wakeup.set()
 
 
