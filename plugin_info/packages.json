@@ -1,5 +1,5 @@
 {
     "pip3": {
-        "aioesphomeapi": {}
+        "aioesphomeapi": {"version": "46.5.0"}
     }
 }

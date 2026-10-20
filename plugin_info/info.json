@@ -1,7 +1,7 @@
 {
     "id": "esphomebe",
     "name": "ESPHome",
-    "pluginVersion": "0.2",
+    "pluginVersion": "0.2.1",
     "description": {
         "fr_FR": "Connexion directe aux modules ESPHome par leur API native chiffrée, sans Home Assistant ni MQTT. Le plugin découvre tout seul les entités déclarées dans le YAML du module (capteurs, contacts, lumières, volets, thermostats, serrures…), crée les commandes info et action correspondantes et reçoit chaque nouvelle valeur en temps réel.",
         "en_US": "Direct connection to ESPHome devices through their encrypted native API, with no Home Assistant or MQTT in between. The plugin discovers the entities declared in the device YAML (sensors, contacts, lights, covers, thermostats, locks…), creates the matching info and action commands and receives every new value in real time."

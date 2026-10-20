@@ -31,7 +31,11 @@ require_once __DIR__ . '/../../../../core/php/core.inc.php';
 
 /* 401 et non 200 sur refus : le démon ne dispose que de la réponse pour savoir
  * si son lot a été pris. */
-if (!jeedom::apiAccess(init('apikey'), 'esphomebe')) {
+/* La seule clé du plugin : jeedom::apiAccess() accepterait aussi celle de
+ * n'importe quel utilisateur. apiAccess() reste appelé pour son contrôle
+ * d'origine (accès du plugin limité à localhost). */
+if (!is_string(init('apikey')) || !hash_equals(jeedom::getApiKey('esphomebe'), init('apikey'))
+    || !jeedom::apiAccess(init('apikey'), 'esphomebe')) {
     http_response_code(401);
     echo 'Not authorized';
     die();

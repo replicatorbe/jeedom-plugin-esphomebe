@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1 — 2026-10-20
+
+- Le point d'entrée appelé par le démon n'accepte plus que la clé API du
+  plugin : la clé personnelle d'un utilisateur Jeedom y donnait aussi accès.
+- Version d'aioesphomeapi figée (46.5.0) : une réinstallation des
+  dépendances ne peut plus casser le démon par une nouvelle version.
+
 ## 0.2 — 2026-10-18
 
 - Un refus HTTP 403 (page d'Apache en incident) n'abandonne plus le lot de
