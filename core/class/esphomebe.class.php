@@ -58,6 +58,12 @@ class esphomebe extends eqLogic {
 
     public static function deamon_start() {
         self::deamon_stop();
+        /* Le nouveau démon s'arrêterait aussitôt sur un port encore tenu.
+         * Un autre programme qui l'occupe n'est pas tué : le journal du
+         * démon le dira. */
+        for ($i = 0; $i < 20 && self::portBusy(); $i++) {
+            usleep(250000);
+        }
 
         $info = self::deamon_info();
         if ($info['launchable'] != 'ok') {
@@ -96,23 +102,58 @@ class esphomebe extends eqLogic {
         return false;
     }
 
+    /* Arrêt propre : SIGTERM, puis jusqu'à dix secondes pour que le démon
+     * ferme ses sessions avec les modules et son port d'ordres. Un kill -9
+     * immédiat laissait le port pris au moment où deamon_start relançait. */
     public static function deamon_stop() {
         $pid_file = jeedom::getTmpFolder(__CLASS__) . '/deamon.pid';
         if (file_exists($pid_file)) {
-            $pid = trim(file_get_contents($pid_file));
-            if ($pid != '') {
-                system::kill($pid);
+            $pid = (int) trim(file_get_contents($pid_file));
+            if ($pid > 0 && self::isDaemonPid($pid)) {
+                posix_kill($pid, 15);
+                for ($i = 0; $i < 40 && self::isDaemonPid($pid); $i++) {
+                    usleep(250000);
+                }
+                if (self::isDaemonPid($pid)) {
+                    posix_kill($pid, 9);
+                }
             }
             @unlink($pid_file);
         }
         /* Filets de sécurité : un démon lancé à la main, ou dont le fichier de PID
          * a été perdu, garderait le port d'ordres occupé. */
-        system::kill('resources/esphomebed/esphomebed.py');
+        if (count(system::ps('resources/esphomebed/esphomebed.py')) > 0) {
+            system::kill('resources/esphomebed/esphomebed.py', false);
+            for ($i = 0; $i < 20 && count(system::ps('resources/esphomebed/esphomebed.py')) > 0; $i++) {
+                usleep(250000);
+            }
+            if (count(system::ps('resources/esphomebed/esphomebed.py')) > 0) {
+                system::kill('resources/esphomebed/esphomebed.py');
+            }
+        }
         system::fuserk(config::byKey('socketport', __CLASS__, 55063));
         foreach (self::byType(__CLASS__) as $eqLogic) {
             $eqLogic->checkAndUpdateCmd('online', 0);
         }
         return true;
+    }
+
+    /* Le PID est-il toujours notre démon ? Après un kill -9, il a pu être
+     * réattribué à un autre processus. */
+    private static function isDaemonPid($_pid) {
+        $cmdline = @file_get_contents('/proc/' . (int) $_pid . '/cmdline');
+        return $cmdline !== false && strpos($cmdline, 'esphomebed.py') !== false;
+    }
+
+    /* Le port d'ordres est-il encore tenu ? Essai d'écoute plutôt que de
+     * connexion : un démon encore là ne voit passer aucun ordre vide. */
+    private static function portBusy() {
+        $server = @stream_socket_server('tcp://127.0.0.1:' . (int) config::byKey('socketport', __CLASS__, 55063), $errno, $errstr);
+        if ($server === false) {
+            return true;
+        }
+        fclose($server);
+        return false;
     }
 
     public static function getCallbackUrl() {

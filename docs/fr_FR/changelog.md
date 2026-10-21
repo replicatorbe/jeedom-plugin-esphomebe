@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.2 — 2026-10-21
+
+- Arrêt du démon propre : il reçoit SIGTERM et a jusqu'à dix secondes pour
+  fermer ses sessions avec les modules et son port d'ordres avant un
+  kill -9. Au redémarrage, le nouveau démon attend (cinq secondes au plus)
+  que ce port soit libéré.
+
 ## 0.2.1 — 2026-10-20
 
 - Le point d'entrée appelé par le démon n'accepte plus que la clé API du
